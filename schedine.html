@@ -1,0 +1,467 @@
+
+<html>
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="common.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script type="text/javascript" src="index.js"></script>
+        <title>Schedine</title>
+        
+    </head>
+    
+    <body style="background-color:lightslategray;text-align:center">
+    
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+              <div  id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../home.html">Home</a>
+                  </li>
+
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div style="display: inline-block;">
+            <div  style="margin-top: 5%; margin-bottom: 5%;">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="V">
+                <label class="form-check-label" for="inlineCheckbox1">Vinte</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="C">
+                <label class="form-check-label" for="inlineCheckbox2">In Corso</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="P">
+                <label class="form-check-label" for="inlineCheckbox3">Perse</label>
+              </div>
+              <button type="button" class="btn btn-outline-light" onclick="filtraSchedine(2)">Ricerca Schedina</button>
+            </div>
+           <div class="row">
+              <div style="margin-top: 5%; margin-bottom: 5%;">
+                <label>Squadra</label>
+                <input type="text" id="nomesquadra1" name="nomesquadra" />
+                <input type="text" id="nomesquadra2" name="nomesquadra" />
+                <input type="text" id="nomesquadra3" name="nomesquadra" />
+                <button id="cercanomesquadra" class="btn btn-outline-light" onclick="filtraPerNome()">Cerca</button>
+              </div>
+           </div>
+            
+            
+        </div>
+
+        <div>
+          <h2 id="bilancioTot">Bilancio complessivo: </h2>
+        </div>
+        <h3 style="background-color: aliceblue; margin-top: 5%; margin-bottom: 3%;"><b>SCHEDINE CLIENTI</b></h3>
+        <table>
+          
+          <thead>
+            <tr>
+              <th scope="col">Importo Scommessa</th>
+              <th scope="col">Vincita Potenziale Attuale</th>
+              <th scope="col">Vincita Potenziale Totale</th>
+              <th scope="col">Stato</th>
+              <th scope="col">Azioni</th>
+            </tr>
+          </thead>
+          <tbody id="schedine">
+
+          </tbody>
+          <tfoot id="conti">
+
+          </tfoot>
+        </table>
+        <h3 style=" background-color: aliceblue;  margin-top: 5%; margin-bottom: 3%;"><b>SCARICO</b></h3>
+        <table>
+          
+          <thead>
+            <tr>
+              
+              <th scope="col">Importo Scommessa</th>
+              <th scope="col">Vincita Potenziale Attuale</th>
+              <th scope="col">Vincita Potenziale Totale</th>
+              <th scope="col">Stato</th>
+              <th scope="col">Azioni</th>
+            </tr>
+          </thead>
+          <tbody id="schedineScarico">
+
+          </tbody>
+          <tfoot id="contiScarico">
+
+          </tfoot>
+        </table>
+    <!-- Modal -->
+      <div class="modal fade" id="modalDettaglio" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Dettaglio Scommessa</h5>
+              <button onclick="Close()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table>
+                <thead>
+                  <tr>
+                    <td colspan="2">Partita</td>
+                    <td>Esito Scommesso</td>
+                    <td>Quota</td>
+                    <td>Esito Effettivo</td>
+                  </tr>
+                </thead>
+                <tbody id="dettaglioScommessa">
+                  
+                </tbody>
+              </table>
+              <div id="foot">
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button onclick="Close()" type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    
+
+        <script>
+          $( document ).ready(function() {
+            schedinaFilter = {
+              esitiFilter: [
+                  "V","C","P"
+                ]
+              }
+            if(sessionStorage.getItem('utenteId') == null || sessionStorage.getItem('utenteId') == undefined) {
+              window.location.assign("../login.html");
+            }
+            var testo = '';
+            var testoScarico = '';
+            var sommaVincitaPotenzialeAttuale = 0
+            var sommaVincitaPotenzialeEffettiva = 0
+            var sommaVincita = 0;
+            var sommaVincitaPotenzialeAttualeScarico = 0;
+            var sommaVincitaPotenzialeEffettivaScarico = 0;
+            var sommaVincitaScarico = 0 ;
+            var sommaVincitaTot = 0;
+            var conti = '';
+            var contiScarico = '';
+                $.ajax({
+                url: "http://65.21.248.233:8082/schedine",
+                type: "POST",
+                data:JSON.stringify(schedinaFilter),
+                contentType:"application/json",
+                dataType:"json",
+                success: function(response) {
+                  console.log(response)
+                  for(var i = 0; i < response.length; i++) {
+                    var riga = response[i];
+                    var colour;
+                    if(riga.copertura === false){
+                    
+                    if(riga.statoSchedina === "C"){
+                      colour= 'yellow'
+                    }
+                    if(riga.statoSchedina === "P"){
+                      sommaVincita += parseFloat(riga.importoScommessa);
+                      colour = 'red'
+                    }
+                    if(riga.statoSchedina === "V"){
+                      colour = 'green'
+                      sommaVincita = sommaVincita -  parseFloat(riga.vincitaPotenzialeEffettiva) + parseFloat(riga.importoScommessa) ;
+                    }
+                    testo += '<tr onclick="Dettaglio(' + riga.idSchedina + ','+riga.importoScommessa + ',' +  riga.vincitaPotenzialeAttuale+ ','+ riga.vincitaPotenzialeEffettiva + ' )" on style="background-color:'+ colour +';">'
+                      + '<td>' + riga.importoScommessa +'€</td><td>' +  riga.vincitaPotenzialeAttuale +
+                         '€</td><td>' + riga.vincitaPotenzialeEffettiva + '€</td><td>' + riga.statoSchedina +'</td><td><button class="btn btn-outline-dark" onclick="deleteSchedina(' + riga.idSchedina +')">Elimina</button></td></tr>'; 
+                         sommaVincitaPotenzialeAttuale+= parseFloat(riga.vincitaPotenzialeAttuale);
+                         sommaVincitaPotenzialeEffettiva+= parseFloat(riga.vincitaPotenzialeEffettiva);
+                  }
+                  else{
+                    if(riga.statoSchedina === "C"){
+                      colour= 'yellow'
+                    }
+                    if(riga.statoSchedina === "P"){
+                      sommaVincitaScarico -= parseFloat(riga.importoScommessa);
+                      colour = 'red'
+                    }
+                    if(riga.statoSchedina === "V"){
+                      colour = 'green'
+                      sommaVincitaScarico = sommaVincitaScarico +  parseFloat(riga.vincitaPotenzialeEffettiva) - parseFloat(riga.importoScommessa) ;
+                    }
+                    testoScarico += '<tr onclick="Dettaglio(' + riga.idSchedina + ','+riga.importoScommessa + ',' +  riga.vincitaPotenzialeAttuale+ ','+ riga.vincitaPotenzialeEffettiva + ' )" on style="background-color:'+ colour +';">'
+                      + '<td>' + riga.importoScommessa +'€</td><td>' +  riga.vincitaPotenzialeAttuale +
+                         '€</td><td>' + riga.vincitaPotenzialeEffettiva + '€</td><td>' + riga.statoSchedina +'</td><td><button class="btn btn-outline-dark" onclick="deleteSchedina(' + riga.idSchedina +')">Elimina</button></td></tr>'; 
+                         sommaVincitaPotenzialeAttualeScarico+= parseFloat(riga.vincitaPotenzialeAttuale);
+                         sommaVincitaPotenzialeEffettivaScarico+= parseFloat(riga.vincitaPotenzialeEffettiva);
+
+                  }
+                  
+                }
+                  sommaVincitaPotenzialeEffettiva = Math.round((sommaVincitaPotenzialeEffettiva + Number.EPSILON) * 100) / 100
+                  sommaVincitaPotenzialeEffettivaScarico = Math.round((sommaVincitaPotenzialeEffettivaScarico + Number.EPSILON) * 100) / 100
+                  conti+="<tr><td></td><td>"+sommaVincitaPotenzialeAttuale+"€</td><td>"+sommaVincitaPotenzialeEffettiva+"€</td><td>Bilancio:</td>";
+                  contiScarico += "<tr><td></td><td>"+sommaVincitaPotenzialeAttualeScarico+"€</td><td>"+sommaVincitaPotenzialeEffettivaScarico+"€</td><td>Bilancio:</td>";
+                    if(sommaVincita <0){
+                      conti+= "<td style='color:red'>" + sommaVincita + "€</td></tr>";
+
+                    } 
+                    else{
+                      conti+= "<td>" + sommaVincita + "€</td></tr>";
+                    }
+                    if(sommaVincitaScarico <0){
+                      contiScarico+= "<td style='color:red'>" + sommaVincitaScarico + "€</td></tr>";
+
+                    } 
+                    else{
+                      contiScarico+= "<td>" + sommaVincitaScarico + "€</td></tr>";
+                    }
+                    sommaVincitaTot = sommaVincita + sommaVincitaScarico
+                  $('#schedine').append(testo);
+                  $('#conti').append(conti);
+                  $('#schedineScarico').append(testoScarico);
+                  $('#contiScarico').append(contiScarico);
+                  if(sommaVincitaTot < 0){
+                    
+                    $('#bilancioTot').append('<b style="color:red" >' + sommaVincitaTot + '€ </b>');
+                  }
+                  else{
+                    $('#bilancioTot').append('<b style="color:green">' + sommaVincitaTot + '€ </b>');
+                  }
+                },
+                error: function(xhr) {
+
+                }
+});
+           
+        });
+        </script>
+        <script>
+          function Dettaglio(id, importo, vincitaPotenzialeAttuale, vincitaPotenzialeEffettiva){
+            var testo = ''
+            $('#dettaglioScommessa').empty();
+            $('#foot').empty();
+            $.ajax({
+                url: "https://65.21.248.233:8082/partite/schedina/" + id + '',
+                type: "GET",
+                success: function(response) {
+                  console.log(response)
+                  for(var i = 0; i < response.length; i++) {
+                    var riga = response[i];
+                    var colour;
+
+                    if(riga.esitoEffettivo === 'C'){
+                      colour= 'yellow'
+                    }
+                    else if(riga.esitoEffettivo !== riga.esitoScommessa){
+                      colour = 'red'
+                    }
+                    else if(riga.esitoEffettivo == riga.esitoScommessa){
+                      colour = 'green'
+                    }
+                    testo += '<tr style="background-color:'+ colour +';">'
+                      + '<td colspan="2">' + riga.partita +'</td><td>' +  riga.esitoScommessa +
+                         '</td><td>' + riga.quotaEsito + '</td><td>' + riga.esitoEffettivo +'</td></tr>'; 
+                     
+                  }
+                  var foot = '<h5>Importo scommessa:' + importo + '€</h5>' +
+                             '<h5>Vincita attuale:' + vincitaPotenzialeAttuale + '€</h5>' +
+                             '<h5>Vincita totale:' + vincitaPotenzialeEffettiva + '€</h5>';
+                  $('#dettaglioScommessa').append(testo);
+                  $('#foot').append(foot);
+                  $('#modalDettaglio').modal('show');
+                },
+                error: function(xhr) {
+
+                }
+});
+           
+          }
+
+          function Close(){
+
+            $("#modalDettaglio").modal('toggle');
+          }
+        </script>
+        <script>
+
+          function filtraSchedine(stato) {
+            testo = ""
+            testoScarico =""
+            $("#schedine").empty()
+            $("#schedineScarico").empty()
+
+            schedinaFilter = {
+              esitiFilter: [
+                
+                ]
+              }
+              
+              if($("#inlineCheckbox1").is(":checked")) {
+                checkBoxVinte = $("#inlineCheckbox1").val()
+                schedinaFilter.esitiFilter.push(checkBoxVinte)
+              }
+              if($("#inlineCheckbox2").is(":checked")) {
+                checkBoxPareggio = $("#inlineCheckbox2").val()
+                schedinaFilter.esitiFilter.push(checkBoxPareggio)
+              }
+              if($("#inlineCheckbox3").is(":checked")) {
+                checkBoxPerse = $("#inlineCheckbox3").val()
+                schedinaFilter.esitiFilter.push(checkBoxPerse)
+              }
+              if(schedinaFilter.esitiFilter.length == 0) {
+                schedinaFilter.esitiFilter.push("V")
+                schedinaFilter.esitiFilter.push("P")
+                schedinaFilter.esitiFilter.push("C")
+              }
+              $.ajax({
+                url: "https://65.21.248.233:8082/schedine",
+                type: "POST",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify(schedinaFilter),
+                success: function(response) {
+                  console.log(response)
+                  for(var i = 0; i < response.length; i++) {
+                    var riga = response[i];
+                    var colour;
+                    
+                    if(riga.statoSchedina === "C"){
+                      colour= 'yellow'
+                    }
+                    if(riga.statoSchedina === "P"){
+
+                      colour = 'red'
+                    }
+                    if(riga.statoSchedina === "V"){
+                      colour = 'green'
+                      
+                    }
+                    if(riga.copertura === false){
+                    testo += '<tr onclick="Dettaglio(' + riga.idSchedina + ','+riga.importoScommessa + ',' +  riga.vincitaPotenzialeAttuale+ ','+ riga.vincitaPotenzialeEffettiva + ' )" on style="background-color:'+ colour +';">'
+                      + '<td>' + riga.importoScommessa +'€</td><td>' +  riga.vincitaPotenzialeAttuale +
+                         '€</td><td>' + riga.vincitaPotenzialeEffettiva + '€</td><td>' + riga.statoSchedina +'</td><td><button class="btn btn-outline-dark" onclick="deleteSchedina(' + riga.idSchedina +')">Elimina</button></td></tr>'; 
+
+                  }
+                  else{
+
+                    testoScarico += '<tr onclick="Dettaglio(' + riga.idSchedina + ','+riga.importoScommessa + ',' +  riga.vincitaPotenzialeAttuale+ ','+ riga.vincitaPotenzialeEffettiva + ' )" on style="background-color:'+ colour +';">'
+                      + '<td>' + riga.importoScommessa +'€</td><td>' +  riga.vincitaPotenzialeAttuale +
+                         '€</td><td>' + riga.vincitaPotenzialeEffettiva + '€</td><td>' + riga.statoSchedina +'</td><td><button class="btn btn-outline-dark" onclick="deleteSchedina(' + riga.idSchedina +')">Elimina</button></td></tr>'; 
+
+
+                  }
+                }
+                 
+                  $('#schedine').append(testo);
+                  $('#schedineScarico').append(testoScarico);
+                  
+                },
+                error: function(xhr) {
+
+                }
+              });
+           
+  
+            
+          }
+          function deleteSchedina(idSchedina){
+               if(confirm("Sei sicuro di voler eliminare la schedina?")){
+
+                 $.ajax({
+                 url: "https://65.21.248.233:8082/schedine/delete/"+ idSchedina,
+                 type: "DELETE",
+                 contentType: "application/json",
+                 success: function(response){
+                   window.location.reload();
+                 }
+                   
+                 });
+               } 
+          }
+        </script>
+
+        <script>
+          function filtraPerNome() {
+
+            var nome1 = $("#nomesquadra1").val();
+            var nome2 = $("#nomesquadra2").val();
+            var nome3 = $("#nomesquadra3").val();
+
+            var schedineNome = {
+              squadra1 : nome1,
+              squadra2 : nome2,
+              squadra3 : nome3
+            }
+            if(nome1 == "" && nome2 == "" && nome3 == "") {
+              window.location.reload();
+              return;
+            }
+
+            $.ajax({
+              url:"https://65.21.248.233:8082/schedine/getbynomesquadra",
+              type: "POST",
+              data:JSON.stringify(schedineNome),
+              contentType:"application/json",
+              dataType:"json",
+              success: function(response) {
+                
+                  testo = ""  
+                  testoScarico =""             
+                  $("#schedine").empty()
+                  $("#schedineScarico").empty()
+                  console.log(response)
+                  for(var i = 0; i < response.length; i++) {
+                    var riga = response[i];
+                    var colour;
+                    
+                    if(riga.statoSchedina === "C"){
+                      colour= 'yellow'
+                    }
+                    if(riga.statoSchedina === "P"){
+
+                      colour = 'red'
+                    }
+                    if(riga.statoSchedina === "V"){
+                      colour = 'green'
+
+                    }
+                    if(riga.copertura === false){
+                    testo += '<tr onclick="Dettaglio(' + riga.idSchedina + ','+riga.importoScommessa + ',' +  riga.vincitaPotenzialeAttuale+ ','+ riga.vincitaPotenzialeEffettiva + ' )" on style="background-color:'+ colour +';">'
+                      + '<td>' + riga.importoScommessa +'€</td><td>' +  riga.vincitaPotenzialeAttuale +
+                         '€</td><td>' + riga.vincitaPotenzialeEffettiva + '€</td><td>' + riga.statoSchedina +'</td><td><button class="btn btn-outline-dark" onclick="deleteSchedina(' + riga.idSchedina +')">Elimina</button></td></tr>'; 
+                         
+                  }
+                  else{
+
+                    testoScarico += '<tr onclick="Dettaglio(' + riga.idSchedina + ','+riga.importoScommessa + ',' +  riga.vincitaPotenzialeAttuale+ ','+ riga.vincitaPotenzialeEffettiva + ' )" on style="background-color:'+ colour +';">'
+                      + '<td>' + riga.importoScommessa +'€</td><td>' +  riga.vincitaPotenzialeAttuale +
+                         '€</td><td>' + riga.vincitaPotenzialeEffettiva + '€</td><td>' + riga.statoSchedina +'</td><td><button class="btn btn-outline-dark" onclick="deleteSchedina(' + riga.idSchedina +')">Elimina</button></td></tr>'; 
+
+
+                  }
+                }
+                 
+                  $('#schedine').append(testo);
+                  $('#schedineScarico').append(testoScarico);
+                  
+                },
+                error: function(xhr) {
+
+                }
+              });
+
+          }
+
+        </script>
+      </body>
+
+</html>

@@ -1,0 +1,599 @@
+<html>
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="common.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <title>Schedine</title>
+      </head>
+
+    <body style="background-color:lightslategray;text-align:center">
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+              <div  id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                 
+                  <li class="nav-item">
+                    <a class="nav-link" href="../schedine.html">Schedine</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div style="margin-top: 2%;">
+
+            <div style="display: inline;">
+              <label for="casa">Squadra casa</label>
+              <input type="text" id="casa" name="casa">
+              <label for="ospite">Squadra ospite</label>
+              <input type="text" id="ospite" name="ospite">
+            </div>
+            <div style="display: inline;">
+              
+              <label>1</label>
+              <input type="number" id="quota1" step="0.01">
+              <label>X</label>
+              <input type="number" id="quotaX" step="0.01">
+              <label>2</label>
+              <input type="number" id="quota2" step="0.01">
+              <button onclick="SalvaPartita()" class="btn btn-success" type="button">Salva</button>
+            </div>
+          </div>
+          <button  data-bs-toggle="modal" data-bs-target="#ModalInsertRisultato"  style="margin-top: 5%;" type="button" class="btn btn-outline-light">Aggiungi Risultato</button>
+          <button  data-bs-toggle="modal" data-bs-target="#modalAnnullaEsito"  style="margin-top: 5%;" type="button" class="btn btn-outline-light">Annulla Esito</button>
+          <button style="margin-top: 5%;" class="btn btn-outline-danger" onclick="deleteAll()">Nuova settimana</button>
+
+          <table style="margin-top: 5%;">
+            <thead>
+              <tr>
+                
+                <th colspan="3" scope="col">Partita</th>
+                <th scope="col">Data</th>
+                <th>Seleziona</th>
+              </tr>
+            </thead>
+            <tbody id="tabSquadre">
+
+            </tbody>
+          </table>
+          
+          <form action="#" method="post" id="cart">
+
+            <table summary="Your cart" id="tabSchedina">             
+              <tr>
+                <th scope="col" colspan="3">Partita</th>
+                <th scope="col">Esito</th>
+                <th scope="col" colspan="2">Quota</th>
+                <th></th>
+              
+              </tr>
+              
+            
+              
+            <tfoot>
+              <tr>
+                <td id="quotaTot">Quota :</td>
+                <td colspan="2">
+                  <input type="number" step="1" placeholder="Importo Scommessa" onchange="Calculate()" id="importo">
+                </td>
+                <td colspan="3" id="vincita">Vincita Totale : </td>
+                <td>Scarico? <input id="scarico" type="checkbox" /></td>
+              </tr>
+            </tfoot>
+            
+            </table>
+            
+            
+            <div>
+              <button type="button" id="saveschedina" onclick="saveSchedina()">Salva schedina</button>
+              
+            </div>
+            </form>
+<!-- Modal Risultato -->
+<div class="modal fade" id="ModalInsertRisultato" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Aggiungi risultato</h5>
+        <button onclick="CloseRisultato()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div  class="modal-body">
+        <div id="elencoPartite">
+
+        </div>
+        <div>
+          
+          <select class="form-select" id="esitoeffettivo">
+            <option selected>Risultato finale</option>
+            <option value="1">1</option>
+            <option value="X">X</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="CloseRisultato()" type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+        <button type="button" class="btn btn-primary" onclick="UpdatePartitaEsito()">Salva Risultato</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Annulla Esito -->
+<div class="modal fade" id="modalAnnullaEsito" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Annulla Esito</h5>
+        <button onclick="CloseEsito()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div  class="modal-body">
+        <div id="elencoPartiteAnnullabili">
+
+        </div>
+        <div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="CloseEsito()" type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+        <button type="button" class="btn btn-primary" onclick="annullaEsito()">Annulla esito</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modale Aggiungi Partita -->
+<div class="modal fade" id="modalUpdatePartita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Inserisci una partita al palinsesto</h1>
+        <button onclick="Close()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-top: 2%;">
+          <input type="hidden" id="partitaId">
+          <label for="casa">Squadra casa</label>
+          <input type="text" id="casaMod" name="casa">
+          <label for="ospite">Squadra ospite</label>
+          <input type="text" id="ospiteMod" name="ospite">
+        </div>
+        <div style="margin-top: 2%;">
+
+          <label>1</label>
+          <input type="number" id="quota1Mod" step="0.01">
+          <label>X</label>
+          <input type="number" id="quotaXMod" step="0.01">
+          <label>2</label>
+          <input type="number" id="quota2Mod" step="0.01">
+
+        
+    </div>
+      <div class="modal-footer">
+        <button onclick="Close()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        <button type="button" onclick="UpdatePartita()" class="btn btn-primary">Salva modifiche</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<script>
+  var quotaTot = 1;
+   function Calculate(){
+  var subtotal = {};
+  quotaTot = 1
+  $('.qty').each(function(){
+     var quotaFinale = $(this).text();
+     console.log(quotaFinale)
+      quotaTot = quotaTot * parseFloat(quotaFinale)
+  });
+
+  quotaTot = Math.round((quotaTot + Number.EPSILON) * 100) / 100
+  document.getElementById('quotaTot').innerText = "Quota: " +  quotaTot
+  var importo = $("#importo").val();
+    var tot = quotaTot * parseFloat(importo);
+    tot = Math.round((tot + Number.EPSILON) * 100) / 100
+    document.getElementById('vincita').innerText = "Vincita totale: " +  tot
+ }
+
+
+ 
+ function inserisciQuota(idPartita, segno, quota) {
+  quotaTot = parseFloat(quotaTot) * parseFloat(quota);
+  var s = segno;
+  if (segno === 0){
+    s = 'X';
+  }
+  $.ajax({
+    url: "http://65.21.248.233:8082/partite/ " + idPartita,
+     type: "GET",
+     success: function(response) {
+       var id = 'schedina' + idPartita + ''
+       if (document.getElementById(id)) {
+         var q = quotaTot/quota;
+         quotaTot = parseFloat(quotaTot) /parseFloat(q);
+         updateQuota(idPartita, q)
+        }
+        quotaFloat = parseFloat(quota)
+        toAppend = '<tr  id="schedina' + idPartita + '"><td style="display:none;" class="ps">'+ idPartita +'</td><td colspan="3">'+response.squadraCasa+'-'+response.squadraOspite+'</td><td class="partitaEsito">'+ s + '</td><td class="qty">'+quotaFloat+'</td><td></td><td><button onclick="rimuoviQuota(' + idPartita  +', ' + quotaFloat + ')">Elimina</button></td></tr>'
+        $('#tabSchedina').append(toAppend);
+        Calculate()
+}
+})
+}
+
+
+function rimuoviQuota(idPartita, quota) {
+
+quotaTot = parseFloat(quotaTot) /parseFloat(quota);
+var id = '#schedina' + idPartita + ''
+  $(id).remove();
+
+Calculate()
+}
+
+function updateQuota(idPartita) {
+
+var id = '#schedina' + idPartita + ''
+  $(id).remove();
+}
+
+
+
+function deleteAll(){
+    Swal.fire({
+  title: 'Sei sicuro di voler continuare?',
+  text: 'In questo modo eliminerai tutte le schedine e le partite presenti. Sei sicuro di voler continuare?',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  cancelButtonText: 'Annulla',
+  confirmButtonText: 'Cancella tutto'
+}).then((result) => {
+  if (result.isConfirmed) {
+
+    $.ajax({
+    url: "https://65.21.248.233:8082/schedine/delete/all",
+    type: "DELETE",
+    contentType: "application/json",
+    success: function(response){
+     
+      window.location.reload();
+    }, error : function(){
+      Swal.fire(
+      'No!',
+      'Si è verificato un errore. Ricarica la pagina',
+      'error'
+    )
+      
+    }
+    
+  });
+
+
+}})}
+
+</script>
+
+
+
+
+<script>
+  $( document ).ready(function() {
+    $('#importo').val(2)
+    if(sessionStorage.getItem('utenteId') == null || sessionStorage.getItem('utenteId') == undefined) {
+      window.location.assign("../login.html");
+    }
+    var testo = '';
+    var select = ' <select id="elenco" class="form-select"><option value="-1" selected>Seleziona una partita</option>';
+      var partiteAnnulla = ' <select id="elencoAnnulla" class="form-select"><option value="-1" selected>Seleziona una partita</option>';
+    $.ajax({
+    url: "https://65.21.248.233:8082/partite",
+    type: "GET",
+    success: function(response) {
+      console.log(response)
+      for(var i = 0; i < response.length; i++) {
+        var riga = response[i];
+       if(riga.esito === 'C' || riga.esito === null){
+
+         testo += '<tr><td>'+ riga.squadraCasa + '</td><td> - </td><td>' + riga.squadraOspite  + '</td>'
+          + '<td><div class="btn-group" role="group" aria-label="Basic example"> <button type="button" class="btn btn-primary" onClick="inserisciQuota('+riga.idPartita+',1,'+riga.quotaUno+')">' + 
+            riga.quotaUno +'</button><button type="button" class="btn btn-primary" onClick="inserisciQuota('+riga.idPartita+',0,'+riga.quotaX+')">' + riga.quotaX + '</button><button type="button" class="btn btn-primary" onClick="inserisciQuota('+riga.idPartita+',2,'+riga.quotaDue+')">'+
+              riga.quotaDue + '</button></div>'
+              + '</td><td><button type="button" onclick="modificaPartita(' + riga.idPartita + ');" class="btn btn-warning">Modifica</button>' + 
+                '<button type="button" onclick="eliminaPartita(' + riga.idPartita + ');" class="btn btn-danger">Elimina</button>' 
+                + '</td></tr>'; 
+                select += '<option value="' + riga.idPartita+ '">' + riga.squadraCasa + ' - ' + riga.squadraOspite + '</option>'
+              }
+              else{
+                partiteAnnulla += '<option value="' + riga.idPartita+ '">' + riga.squadraCasa + ' - ' + riga.squadraOspite + '</option>'
+              }
+            }
+      $('#tabSquadre').append(testo);
+      select += '</select>'
+      $('#elencoPartite').append(select);
+      partiteAnnulla +='</select>'
+      $('#elencoPartiteAnnullabili').append(partiteAnnulla);
+    },
+    error: function(xhr) {
+
+    }
+});
+});
+</script>
+
+<script>
+  function SalvaPartita(){
+    var squadraCasa =  $('#casa').val();
+    var squadraOspite = $('#ospite').val();
+    var quota1 = $('#quota1').val();
+    var quotaX = $('#quotaX').val();
+    var quota2 = $('#quota2').val();
+    if(squadraCasa === '' || squadraOspite === ''){
+      Swal.fire(
+  'Errore compilazione',
+  'Inserisci le squadre correttamente',
+  'warning'
+)
+      return;
+    }
+    console.log(quota1)
+    if(quota1 === '' || quota2 ===''  || quotaX === ''){
+      Swal.fire(
+  'Errore compilazione',
+  'Inserisci le quote correttamente',
+  'warning'
+)
+      return;
+    }
+    var partita = {
+      squadraCasa : squadraCasa,
+      squadraOspite : squadraOspite,
+      quotaUno : parseFloat(quota1),
+      quotaX : parseFloat(quotaX),
+      quotaDue : parseFloat(quota2)
+      
+    };
+    console.log(partita);
+    $.ajax({
+    url: "https://65.21.248.233:8082/partite/add",
+    type: "POST",
+    data: JSON.stringify(partita),
+    contentType: "application/json",
+    success: function(response){
+      if(response === "") {
+        Swal.fire(
+      'No!',
+      'Partita già inserita!',
+      'error'
+    )
+      } else {
+        window.location.reload();
+      }
+    }
+      
+    });
+  }
+
+
+
+  function modificaPartita(id){
+    $.ajax({
+    url: "https://65.21.248.233:8082/partite/ " + id,
+    type: "GET",
+    success: function(response) {
+      document.getElementById("partitaId").value = response.idPartita;
+      $('#casaMod').val(response.squadraCasa)
+      $('#ospiteMod').val(response.squadraOspite)
+      $('#quota1Mod').val(response.quotaUno)
+      $('#quotaXMod').val(response.quotaX)
+      $('#quota2Mod').val(response.quotaDue)
+      $('#modalUpdatePartita').modal('show');
+    }
+  })
+  }
+
+  function UpdatePartita(){
+    var partitaId =  $('#partitaId').val();
+    var squadraCasa =  $('#casaMod').val();
+    var squadraOspite = $('#ospiteMod').val();
+    var quota1 = $('#quota1Mod').val();
+    var quotaX = $('#quotaXMod').val();
+    var quota2 = $('#quota2Mod').val();
+    var partita = {
+      idPartita : parseInt(partitaId),
+      squadraCasa : squadraCasa,
+      squadraOspite : squadraOspite,
+      quotaUno : parseFloat(quota1),
+      quotaX : parseFloat(quotaX),
+      quotaDue : parseFloat(quota2)
+    };
+
+      $.ajax({
+    url: "https://65.21.248.233:8082/partite/update",
+    type: "PUT",
+    data: JSON.stringify(partita),
+    contentType: "application/json",
+    success: function(response){
+      window.location.reload();
+    }
+      
+    });
+      
+    };
+  
+
+  function UpdatePartitaEsito(){
+    var partitaId =  $('#elenco').val();
+    esito = $("#esitoeffettivo").val();
+    var partita = {
+      idPartita : parseInt(partitaId),
+
+      esito: this.esito
+    };
+    
+
+    $.ajax({
+    url: "https://65.21.248.233:8082/partite/update",
+    type: "PUT",
+    data: JSON.stringify(partita),
+    contentType: "application/json",
+    success: function(response){
+      window.location.reload();
+    }
+      
+    });
+  }
+
+  function eliminaPartita(id){
+    Swal.fire({
+  title: 'Sei sicuro di voler eliminare la partita?',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  cancelButtonText: 'Annulla',
+  confirmButtonText: 'Cancella'
+}).then((result) => {
+  if (result.isConfirmed) {
+
+    $.ajax({
+    url: "https://65.21.248.233:8082/partite/delete/"+ id,
+    type: "DELETE",
+    contentType: "application/json",
+    success: function(response){
+     
+      window.location.reload();
+    }, error : function(){
+      Swal.fire(
+      'No!',
+      'Partita associata ad una schedina, impossibile rimuovere. Eliminare prima tutte le schedine che presentano questa partita!',
+      'error'
+    )
+      
+    }
+    
+  });
+
+
+}})}
+
+
+
+
+function  annullaEsito(){
+  var partitaId =  $('#elencoAnnulla').val();
+    Swal.fire({
+  title: 'Sei sicuro di voler annullare il risultato?',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  cancelButtonText: 'Chiudi',
+  confirmButtonText: 'Annulla risultato'
+}).then((result) => {
+  if (result.isConfirmed) {
+
+    $.ajax({
+      url: "https://65.21.248.233:8082/partite/annulla-esito/" + parseInt(partitaId),
+    type: "PUT",
+    contentType: "application/json",
+    success: function(response){
+     
+      window.location.reload();
+    }, error : function(){
+      Swal.fire(
+      'No!',
+      'Si è verificato un errore. Ricarica la pagina',
+      'error'
+    )
+      
+    }
+    
+  });
+
+
+}})}
+
+
+
+
+  function saveSchedina() {
+    
+    var tot= $('.ps').length;
+    if(parseInt(tot) <= 0){
+      Swal.fire(
+      'No!',
+      'Inserisci almeno una partita nella schedina',
+      'error'
+    )
+      return;
+    }
+      var id = '';
+      var esito = ''
+      $('.ps').each(function(){
+        
+        var q = $(this).text();
+        console.log(q)
+        id += q+ ',';
+      })
+      $('.partitaEsito').each(function(){
+        
+        var e = $(this).text();
+        console.log(e)
+        esito += e + ',';
+      })
+
+    var importo = $("#importo").val();
+
+    var scaricoB = $('#scarico').is(":checked")
+    var partitaSchedina = {
+      idPartite : id,
+      esitiPartite : esito,
+      importoSchedina :parseFloat(importo),
+      scarico: scaricoB
+      
+    }
+    $.ajax({
+    url: "https://65.21.248.233:8082/partite/schedina/add",
+    type: "POST",
+    data: JSON.stringify(partitaSchedina),
+    contentType: "application/json",
+    success: function(response){
+      window.location.reload();
+    }
+      
+    });
+}
+
+function Close(){
+
+$("#modalDettaglio").modal('toggle');
+
+}
+
+function CloseRisultato(){
+  $("#ModalInsertRisultato").modal('toggle');
+
+}
+function CloseEsito(){
+
+$("#modalAnnullaEsito").modal('toggle');
+
+}
+
+</script>
+
+
+</html>

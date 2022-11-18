@@ -1,0 +1,196 @@
+body{
+    padding: 3%;
+}
+table {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    table-layout: fixed;
+    
+  }
+  
+  table caption {
+    font-size: 1.5em;
+    margin: .5em 0 .75em;
+  }
+  
+  table tr {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: .35em;
+  }
+  
+  table th,
+  table td {
+    padding: .625em;
+    text-align: center;
+  }
+  
+  table th {
+    font-size: .85em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  
+  @media screen and (max-width: 600px) {
+    table {
+      border: 0;
+    }
+  
+    table caption {
+      font-size: 1.3em;
+    }
+    
+    table thead {
+      border: none;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+    
+    table tr {
+      border-bottom: 3px solid #ddd;
+      display: block;
+      margin-bottom: .625em;
+    }
+    
+    table td {
+      border-bottom: 1px solid #ddd;
+      display: block;
+      font-size: .8em;
+      text-align: right;
+    }
+    
+    table td::before {
+      /*
+      * aria-label has no advantage, it won't be read inside a table
+      content: attr(aria-label);
+      */
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    
+    table td:last-child {
+      border-bottom: 0;
+    }
+  }
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  /* Float four columns side by side */
+  .column {
+    float: left;
+    width: 25%;
+    padding: 0 10px;
+  }
+  
+  /* Remove extra left and right margins, due to padding */
+  .row {margin: 0 -5px;}
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  
+  /* Responsive columns */
+  @media screen and (max-width: 600px) {
+    .column {
+      width: 100%;
+      display: block;
+      margin-bottom: 20px;
+    }
+  }
+  
+  /* Style the counter cards */
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    text-align: center;
+    background-color: #f1f1f1;
+  }
+  #cart {
+    width: 36em;
+    margin: 2em;
+  }
+  
+  #cart table {
+    width: 100%;
+    border-collapse: collapse;
+    border-bottom: 1px solid #ccc;
+    border-spacing: 0;
+  }
+  
+  #cart table tr:nth-child(odd) {
+  
+    background: #f5f5f5;
+  
+  }
+  
+  #cart table caption {
+    text-transform: uppercase;
+    text-align: left;
+    padding-bottom: 4px;
+  }
+  
+  #cart table th {
+    text-align: left;
+    padding: 5px;
+    background: #08c;
+    color: #fff;
+    border-left: 1px solid;
+  }
+  
+  #cart table td {
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  #cart table td input {
+    font: 1em Arial, sans-serif;
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+  
+  #cart div {
+    margin: 1em 0;
+    text-align: center;
+  }
+  
+  #cart div button {
+    padding: 0.3em 1.2em;
+    background: #08c;
+    color: #fff;
+    display: inline-block;
+    text-decoration: none;
+    margin-right: 0.5em;
+    border: none;
+    font: 1em Arial, sans-serif;
+  }
+  
+  
+  
+  #cart div input {
+    border: none;
+    padding: 0.3em 1.2em;
+    background: #08c;
+    color: #fff;
+    display: inline-block;
+    font: 1em Arial, sans-serif;
+  }
+
+  
